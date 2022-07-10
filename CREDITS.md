@@ -1,0 +1,13 @@
+# CREDITS
+- arlez80 (Yui Kinomoto)
+	- Godot Midi Player
+		- https://bitbucket.org/arlez80/godot-midi-player
+		- https://bitbucket.org/arlez80/godot-midi-player/src/master/LICENSE.txt
+- samsface (Sam Murray)
+	- Godot rhythm game using midi tutorial
+		- https://www.youtube.com/watch?v=owbRRxrIp14
+		- https://github.com/samsface/godot-tutorials/tree/master/midi
+- LegionGames
+	- Rhythm game conductor tutorial
+		- https://www.youtube.com/watch?v=_FRiPPbJsFQ
+		- https://github.com/LegionGames/Conductor-Example/

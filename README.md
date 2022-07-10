@@ -35,7 +35,7 @@ none
 - ### For Normal People:
 	- Create a discussion asking for the feature you want, and why you think it would improve the game, along with providing any implications it may have
 ## FAQ:
-- Q: Why is ShadowFungi working on Mossism?!
+- Q: Why isn't ShadowFungi working on Mossism?!
 	- A: Because Godot 3.5 is still only a release Candidate.
 - Q: When Godot 3.5 is out will ShadowFungi work on Mossism again?
 	- A: Some but not as much.
