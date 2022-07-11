@@ -1,0 +1,118 @@
+[gd_scene load_steps=4 format=2]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 479, 40 )
+
+[sub_resource type="Shader" id=2]
+code = "shader_type canvas_item;
+
+uniform vec2 topleft = vec2(0.01, 0.0);
+uniform vec2 topright;
+uniform vec2 bottomleft;
+uniform vec2 bottomright;
+
+
+float _cross( in vec2 a, in vec2 b ) { return a.x*b.y - a.y*b.x; }
+
+vec2 invBilinear( in vec2 p, in vec2 a, in vec2 b, in vec2 c, in vec2 d ) {
+	vec2 res = vec2(-1.0);
+
+	vec2 e = b-a;
+	vec2 f = d-a;
+	vec2 g = a-b+c-d;
+	vec2 h = p-a;
+
+	float k2 = _cross( g, f );
+	float k1 = _cross( e, f ) + _cross( h, g );
+	float k0 = _cross( h, e );
+
+	// if edges are parallel, use a linear equation.
+	if( abs(k2)<0.001 ) {
+		res = vec2( (h.x*k1+f.x*k0)/(e.x*k1-g.x*k0), -k0/k1 );
+	}
+	// otherwise, it's a quadratic
+	else {
+		float w = k1*k1 - 4.0*k0*k2;
+		if( w<0.0 ) return vec2(-1.0);
+		w = sqrt( w );
+
+		float ik2 = 0.5/k2;
+		float v = (-k1 - w)*ik2;
+		float u = (h.x - f.x*v)/(e.x + g.x*v);
+		
+		if( u<0.0 || u>1.0 || v<0.0 || v>1.0 ) {
+		v = (-k1 + w)*ik2;
+		   u = (h.x - f.x*v)/(e.x + g.x*v);
+		}
+		res = vec2( u, 1.0 - v );
+	}
+	
+	return res;
+}
+
+
+void fragment(){
+	vec2 topleftUV = topleft / vec2(textureSize(TEXTURE,0));  // compensates for screensize ratio
+	vec2 toprightUV = vec2(1.0,0.0)+topright / vec2(textureSize(TEXTURE,0));
+	vec2 bottomrightUV = vec2(1.0,1.0)+bottomright / vec2(textureSize(TEXTURE,0));
+	vec2 bottomleftUV =vec2(0.0,1.0)+ bottomleft / vec2(textureSize(TEXTURE,0));
+
+	vec2 newUV = invBilinear(UV, topleftUV, toprightUV, bottomrightUV, bottomleftUV);
+	
+	if (topleft.x == 0.0 || topright.x == 0.0) {
+		COLOR = texture(SCREEN_TEXTURE, UV);
+	}
+	else {
+		if (newUV == vec2(-1.0)){
+			COLOR = vec4(0.0);
+		}else {
+			COLOR = texture(SCREEN_TEXTURE, newUV);
+		}
+	}
+}"
+
+[sub_resource type="ShaderMaterial" id=3]
+shader = SubResource( 2 )
+shader_param/topleft = Vector2( 2, 0 )
+shader_param/topright = Vector2( -2, 0 )
+shader_param/bottomleft = Vector2( 0, 0 )
+shader_param/bottomright = Vector2( 0, 0 )
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2( 640, 589 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource( 1 )
+
+[node name="Control" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 1280.0
+margin_bottom = 720.0
+grow_horizontal = 2
+grow_vertical = 2
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": true
+}
+
+[node name="LeftRect" type="ColorRect" parent="Control"]
+margin_left = 150.0
+margin_top = -481.0
+margin_right = 160.0
+margin_bottom = 1201.0
+
+[node name="RightRect" type="ColorRect" parent="Control"]
+margin_left = 1120.0
+margin_top = -481.0
+margin_right = 1130.0
+margin_bottom = 1201.0
+
+[node name="skew" type="ColorRect" parent="Control"]
+material = SubResource( 3 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
